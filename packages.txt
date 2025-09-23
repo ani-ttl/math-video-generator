@@ -1,0 +1,13 @@
+freeglut3-dev
+libgl1-mesa-dev
+libgles2-mesa-dev
+libglib2.0-0
+libsm6
+libxext6
+libxrender-dev
+libpangocairo-1.0-0
+libatk1.0-0
+libcairo-gobject2
+libgtk-3-0
+libgdk-pixbuf2.0-0
+ffmpeg
