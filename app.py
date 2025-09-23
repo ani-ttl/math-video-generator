@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 import requests
 import json
+from manim import *
 
 # Page config
 st.set_page_config(
