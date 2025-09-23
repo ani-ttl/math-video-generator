@@ -1,6 +1,2 @@
-python3-dev
-libcairo2-dev
-libpango1.0-dev
 ffmpeg
-freeglut3-dev
-libgl1-mesa-dev
+libpangocairo-1.0-0
