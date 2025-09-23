@@ -8,6 +8,12 @@ import requests
 import json
 from manim import *
 
+# Configure Manim for Streamlit
+config.verbosity = "WARNING"
+config.progress_bar = "none"
+config.quality = "medium_quality"
+config.disable_caching = True
+
 # Page config
 st.set_page_config(
     page_title="Math Video Generator",
@@ -267,4 +273,35 @@ with st.expander("📋 Installation Instructions"):
 
 # Footer
 st.markdown("---")
-st.markdown("Built with ❤️ using Streamlit, Manim, and AI")
+st.markdown("Built by TTL using Streamlit, Manim, Sarvam and Claude API")
+
+# When generating the video, use this pattern:
+def generate_manim_video(script_content, output_quality="medium"):
+    """Generate video from Manim script"""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Save the script
+        script_path = os.path.join(temp_dir, "animation.py")
+        with open(script_path, 'w') as f:
+            f.write(script_content)
+        
+        # Set output path
+        output_path = os.path.join(temp_dir, "output.mp4")
+        
+        # Configure Manim
+        config.output_file = output_path
+        config.quality = f"{output_quality}_quality"
+        
+        # Execute the script
+        exec(compile(open(script_path).read(), script_path, 'exec'))
+        
+        # Return the video path
+        if os.path.exists(output_path):
+            return output_path
+        else:
+            # Look for video in media directory
+            media_dir = os.path.join(temp_dir, "media", "videos")
+            for root, dirs, files in os.walk(media_dir):
+                for file in files:
+                    if file.endswith('.mp4'):
+                        return os.path.join(root, file)
+    return None
