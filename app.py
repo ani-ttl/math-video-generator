@@ -130,4 +130,4 @@ with st.expander("📚 Sample Problems"):
     """)
 
 st.markdown("---")
-st.markdown("✨ **Status**: Basic app working! Ready for Manim integration later.")
+st.markdown("✨ **Status**: Buillt by TicTacLearn")
