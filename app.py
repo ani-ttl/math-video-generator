@@ -36,7 +36,7 @@ problem = st.text_area(
 
 grade_level = st.selectbox(
     "Grade Level:",
-    ["Elementary", "Middle School", "High School", "College"]
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 )
 
 if st.button("Generate Solution Video", type="primary"):
