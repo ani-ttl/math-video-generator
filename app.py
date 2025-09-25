@@ -11,7 +11,7 @@ import hashlib
 
 # Page config
 st.set_page_config(
-    page_title="NCERT Math Video Generator",
+    page_title="Math Video Generator",
     page_icon="📐",
     layout="wide"
 )
