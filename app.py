@@ -16,7 +16,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📐 NCERT Math Video Generator")
+st.title("📐 Math Video Generator")
 st.markdown("Generate educational math videos for grades 6-10 with Hindi-English narration using Manim and Sarvam AI")
 
 # Check Manim installation
@@ -528,16 +528,12 @@ with st.expander("📦 Installation Guide"):
     
     # Install Python packages
     pip install manim sarvamai streamlit requests numpy Pillow
-    ```
-    
-    ### Get API Keys:
-    - **Claude**: https://console.anthropic.com/
-    - **Sarvam AI**: https://www.sarvam.ai/
-    """)
+    ```  
+      """)
 
 # Footer
 st.markdown("---")
-st.markdown("🇮🇳 **Built for NCERT Curriculum** | Supports Hindi-English bilingual education")
+st.markdown("🇮🇳 **Created by Team TicTacLearn**")
 
 if st.button("🧪 Test Dependencies"):
     st.info("Testing all dependencies...")
