@@ -24,6 +24,15 @@ with st.sidebar:
         st.success("API key entered")
     else:
         st.warning("Enter your Claude API key")
+        
+with st.sidebar:
+    st.header("🔑 API Key")
+    sarvam_api_key = st.text_input("Sarvam API Key", type="password")
+    
+    if sarvam_api_key:
+        st.success("API key entered")
+    else:
+        st.warning("Enter your Sarvam API key")
 
 # Main content
 st.header("📝 Generate Math Content")
@@ -42,6 +51,8 @@ grade_level = st.selectbox(
 if st.button("Generate Solution Video", type="primary"):
     if not claude_api_key:
         st.error("Please enter your Claude API key")
+    elif not sarvam_api_key:
+        st.error("Please enter your Sarvam API key")
     elif not problem:
         st.error("Please enter a math problem")
     else:
