@@ -26,7 +26,6 @@ with st.sidebar:
         st.warning("Enter your Claude API key")
         
 with st.sidebar:
-    st.header("🔑 API Key")
     sarvam_api_key = st.text_input("Sarvam API Key", type="password")
     
     if sarvam_api_key:
