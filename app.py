@@ -43,7 +43,7 @@ problem = st.text_area(
 )
 
 grade_level = st.selectbox(
-    "Grade Level:",
+    "Grade:",
     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 )
 
@@ -123,20 +123,14 @@ if st.button("Test API Connection"):
 # Sample problems
 with st.expander("📚 Sample Problems"):
     st.markdown("""
-    **Elementary:**
+    **Grade 2:**
     - What is 15 + 27?
-    - Find the area of a rectangle with length 8 and width 5
-    
-    **Middle School:**
+        
+    **Grade 7:**
     - Solve: 3x + 7 = 22
-    - What is 25% of 80?
     
-    **High School:**
+    **Grade 9:**
     - Factor: x² + 5x + 6
-    - Find the slope between points (2,3) and (5,9)
-    
-    **College:**
-    - Find derivative of: f(x) = x³ + 2x² - 5x + 1
     """)
 
 st.markdown("---")
