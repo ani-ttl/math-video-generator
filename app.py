@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 st.title("📐 Math Content Generator")
-st.markdown("Generate educational math content using Claude AI")
+st.markdown("Generate math problem-solving videos using Claude AI")
 
 # Check if we're running successfully
 st.success("✅ App is running successfully!")
