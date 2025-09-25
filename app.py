@@ -39,7 +39,7 @@ grade_level = st.selectbox(
     ["Elementary", "Middle School", "High School", "College"]
 )
 
-if st.button("Generate Solution", type="primary"):
+if st.button("Generate Solution Video", type="primary"):
     if not claude_api_key:
         st.error("Please enter your Claude API key")
     elif not problem:
