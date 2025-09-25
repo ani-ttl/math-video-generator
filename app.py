@@ -1,307 +1,133 @@
 import streamlit as st
-import os
-import tempfile
-import subprocess
-import time
-from pathlib import Path
 import requests
 import json
-from manim import *
-
-# Configure Manim for Streamlit
-config.verbosity = "WARNING"
-config.progress_bar = "none"
-config.quality = "medium_quality"
-config.disable_caching = True
 
 # Page config
 st.set_page_config(
-    page_title="Math Video Generator",
+    page_title="Math Content Generator",
     page_icon="📐",
     layout="wide"
 )
 
-st.title("📐 Math Video Generator")
-st.markdown("Generate animated math videos using AI and Manim")
+st.title("📐 Math Content Generator")
+st.markdown("Generate educational math content using Claude AI")
 
-# Sidebar for API keys
+# Check if we're running successfully
+st.success("✅ App is running successfully!")
+
+# Sidebar
 with st.sidebar:
-    st.header("🔑 API Configuration")
-    claude_api_key = st.text_input("Claude API Key", type="password", help="Your Anthropic Claude API key")
-    sarvam_api_key = st.text_input("Sarvam AI API Key", type="password", help="Your Sarvam AI API key (for voice)")
-
-# Main interface
-col1, col2 = st.columns([1, 1])
-
-with col1:
-    st.header("📝 Problem Details")
+    st.header("🔑 API Key")
+    claude_api_key = st.text_input("Claude API Key", type="password")
     
-    problem_text = st.text_area(
-        "Math Problem",
-        placeholder="Enter the math problem to solve...",
-        height=100
-    )
-    
-    grade_level = st.selectbox(
-        "Grade Level",
-        ["Elementary (K-5)", "Middle School (6-8)", "High School (9-12)", "College"]
-    )
-    
-    solution = st.text_area(
-        "Solution Steps",
-        placeholder="Enter the step-by-step solution...",
-        height=150
-    )
-    
-    additional_notes = st.text_area(
-        "Additional Notes (Optional)",
-        placeholder="Any specific animation requests or emphasis...",
-        height=80
-    )
-
-with col2:
-    st.header("🎬 Video Settings")
-    
-    video_length = st.slider("Target Video Length (minutes)", 1, 5, 2)
-    video_quality = st.selectbox("Video Quality", ["low", "medium", "high"])
-    include_voice = st.checkbox("Include AI Voiceover", value=True)
-
-# Generate button
-if st.button("🚀 Generate Video", type="primary", use_container_width=True):
-    if not claude_api_key:
-        st.error("Please enter your Claude API key in the sidebar")
-    elif not problem_text or not solution:
-        st.error("Please enter both the problem and solution")
+    if claude_api_key:
+        st.success("API key entered")
     else:
-        # Create progress indicators
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        
-        try:
-            # Step 1: Generate Manim script using Claude
-            status_text.text("🤖 Generating animation script with Claude AI...")
-            progress_bar.progress(20)
-            
-            # Claude API call
-            claude_prompt = f"""
-You are an expert at creating educational math animations using the Manim library. 
+        st.warning("Enter your Claude API key")
 
-Create a complete Python script that:
-1. Uses Manim to animate the solution to this math problem
-2. Includes clear step-by-step visual explanations
-3. Is appropriate for {grade_level} level
-4. Takes approximately {video_length} minutes to watch
-5. Includes narration text as comments
+# Main content
+st.header("📝 Generate Math Content")
 
-Problem: {problem_text}
-
-Solution: {solution}
-
-Additional requirements: {additional_notes}
-
-Generate ONLY the Python code with proper Manim syntax. Include detailed comments for narration.
-The class should be named 'MathAnimation' and inherit from Scene.
-"""
-            
-            manim_script = call_claude_api(claude_prompt, claude_api_key)
-            
-            if manim_script:
-                progress_bar.progress(40)
-                status_text.text("💾 Saving animation script...")
-                
-                # Step 2: Save script to temporary file
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-                    f.write(manim_script)
-                    script_path = f.name
-                
-                progress_bar.progress(60)
-                status_text.text("🎬 Rendering video with Manim...")
-                
-                # Step 3: Run Manim to generate video
-                output_dir = tempfile.mkdtemp()
-                cmd = [
-                    "manim",
-                    "-pql" if video_quality == "low" else "-pqm" if video_quality == "medium" else "-pqh",
-                    script_path,
-                    "MathAnimation",
-                    "-o", output_dir
-                ]
-                
-                result = subprocess.run(cmd, capture_output=True, text=True)
-                
-                if result.returncode == 0:
-                    progress_bar.progress(80)
-                    status_text.text("🎵 Adding voiceover (if enabled)...")
-                    
-                    # Step 4: Add voiceover if requested
-                    video_path = find_video_file(output_dir)
-                    
-                    if include_voice and sarvam_api_key and video_path:
-                        video_path = add_voiceover(video_path, manim_script, sarvam_api_key)
-                    
-                    progress_bar.progress(100)
-                    status_text.text("✅ Video generated successfully!")
-                    
-                    # Step 5: Display results
-                    if video_path and os.path.exists(video_path):
-                        st.success("🎉 Your math video is ready!")
-                        
-                        # Display video
-                        with open(video_path, 'rb') as video_file:
-                            video_bytes = video_file.read()
-                            st.video(video_bytes)
-                        
-                        # Download button
-                        st.download_button(
-                            label="📥 Download Video",
-                            data=video_bytes,
-                            file_name=f"math_video_{int(time.time())}.mp4",
-                            mime="video/mp4"
-                        )
-                        
-                        # Show generated script
-                        with st.expander("View Generated Script"):
-                            st.code(manim_script, language="python")
-                    
-                    else:
-                        st.error("Video file not found after rendering")
-                        
-                else:
-                    st.error(f"Manim rendering failed: {result.stderr}")
-                    
-                # Cleanup
-                try:
-                    os.unlink(script_path)
-                except:
-                    pass
-                    
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-            progress_bar.progress(0)
-            status_text.text("")
-
-# Fix video section
-st.header("🔧 Fix Generated Video")
-st.markdown("If the generated video needs adjustments, describe what needs to be fixed:")
-
-fix_description = st.text_area(
-    "What needs to be fixed?",
-    placeholder="e.g., 'The animation is too fast', 'Add more explanation for step 2', 'Change the color scheme'...",
+problem = st.text_area(
+    "Enter a math problem:",
+    placeholder="e.g., Solve for x: 2x + 5 = 13",
     height=100
 )
 
-if st.button("🔄 Regenerate with Fixes", type="secondary"):
-    if fix_description:
-        st.info("Feature coming soon: Video will be regenerated with your requested fixes")
+grade_level = st.selectbox(
+    "Grade Level:",
+    ["Elementary", "Middle School", "High School", "College"]
+)
+
+if st.button("Generate Solution", type="primary"):
+    if not claude_api_key:
+        st.error("Please enter your Claude API key")
+    elif not problem:
+        st.error("Please enter a math problem")
     else:
-        st.warning("Please describe what needs to be fixed")
-
-def call_claude_api(prompt, api_key):
-    """Call Claude API to generate Manim script"""
-    try:
-        headers = {
-            "Content-Type": "application/json",
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01"
-        }
-        
-        data = {
-            "model": "claude-3-sonnet-20240229",
-            "max_tokens": 4000,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt
+        with st.spinner("Generating solution..."):
+            # Call Claude API
+            try:
+                headers = {
+                    "Content-Type": "application/json",
+                    "x-api-key": claude_api_key,
+                    "anthropic-version": "2023-06-01"
                 }
-            ]
-        }
-        
-        response = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers=headers,
-            json=data,
-            timeout=60
-        )
-        
-        if response.status_code == 200:
-            return response.json()["content"][0]["text"]
-        else:
-            st.error(f"Claude API error: {response.status_code}")
-            return None
-            
-    except Exception as e:
-        st.error(f"Error calling Claude API: {str(e)}")
-        return None
+                
+                prompt = f"""
+                Create a detailed step-by-step solution for this math problem appropriate for {grade_level} level:
+                
+                Problem: {problem}
+                
+                Please provide:
+                1. A clear step-by-step solution
+                2. Explanation of each step
+                3. The final answer
+                """
+                
+                data = {
+                    "model": "claude-3-sonnet-20240229",
+                    "max_tokens": 2000,
+                    "messages": [
+                        {"role": "user", "content": prompt}
+                    ]
+                }
+                
+                response = requests.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers=headers,
+                    json=data,
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()["content"][0]["text"]
+                    st.success("Solution generated!")
+                    st.markdown("### Solution:")
+                    st.markdown(result)
+                    
+                    # Download button
+                    st.download_button(
+                        "Download Solution",
+                        result,
+                        f"solution_{hash(problem)}.txt",
+                        mime="text/plain"
+                    )
+                else:
+                    st.error(f"API Error: {response.status_code}")
+                    st.text(response.text)
+                    
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
 
-def find_video_file(output_dir):
-    """Find the generated video file"""
-    for file in Path(output_dir).rglob("*.mp4"):
-        return str(file)
-    return None
+# Test section
+st.header("🧪 Test Section")
+st.info("This section confirms the app is working correctly")
 
-def add_voiceover(video_path, script_content, sarvam_api_key):
-    """Add AI-generated voiceover (placeholder - implement based on Sarvam API)"""
-    # This would integrate with Sarvam AI's text-to-speech API
-    # For now, return the original video path
-    return video_path
+if st.button("Test API Connection"):
+    if claude_api_key:
+        st.success("✅ Ready to test API")
+    else:
+        st.warning("Enter API key first")
 
-# Installation instructions
-with st.expander("📋 Installation Instructions"):
+# Sample problems
+with st.expander("📚 Sample Problems"):
     st.markdown("""
-    To run this app locally:
+    **Elementary:**
+    - What is 15 + 27?
+    - Find the area of a rectangle with length 8 and width 5
     
-    1. **Install Python dependencies:**
-    ```bash
-    pip install streamlit manim requests
-    ```
+    **Middle School:**
+    - Solve: 3x + 7 = 22
+    - What is 25% of 80?
     
-    2. **Install system dependencies (Ubuntu/Debian):**
-    ```bash
-    sudo apt update
-    sudo apt install -y cairo-dev libcairo2-dev
-    ```
+    **High School:**
+    - Factor: x² + 5x + 6
+    - Find the slope between points (2,3) and (5,9)
     
-    3. **Run the app:**
-    ```bash
-    streamlit run app.py
-    ```
-    
-    4. **Get API Keys:**
-    - Claude: https://console.anthropic.com/
-    - Sarvam AI: https://www.sarvam.ai/
+    **College:**
+    - Find derivative of: f(x) = x³ + 2x² - 5x + 1
     """)
 
-# Footer
 st.markdown("---")
-st.markdown("Built by TTL using Streamlit, Manim, Sarvam and Claude API")
-
-# When generating the video, use this pattern:
-def generate_manim_video(script_content, output_quality="medium"):
-    """Generate video from Manim script"""
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Save the script
-        script_path = os.path.join(temp_dir, "animation.py")
-        with open(script_path, 'w') as f:
-            f.write(script_content)
-        
-        # Set output path
-        output_path = os.path.join(temp_dir, "output.mp4")
-        
-        # Configure Manim
-        config.output_file = output_path
-        config.quality = f"{output_quality}_quality"
-        
-        # Execute the script
-        exec(compile(open(script_path).read(), script_path, 'exec'))
-        
-        # Return the video path
-        if os.path.exists(output_path):
-            return output_path
-        else:
-            # Look for video in media directory
-            media_dir = os.path.join(temp_dir, "media", "videos")
-            for root, dirs, files in os.walk(media_dir):
-                for file in files:
-                    if file.endswith('.mp4'):
-                        return os.path.join(root, file)
-    return None
+st.markdown("✨ **Status**: Basic app working! Ready for Manim integration later.")
