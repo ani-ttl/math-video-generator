@@ -130,4 +130,4 @@ with st.expander("📚 Sample Problems"):
     """)
 
 st.markdown("---")
-st.markdown("✨ **Status**: Buillt by TicTacLearn")
+st.markdown("✨ **Status**: Built by TicTacLearn")
