@@ -130,7 +130,7 @@ with st.expander("⚙️ Advanced Settings"):
         voice_pace = st.slider("Voice Pace", 0.7, 1.3, 0.95, 0.05)
 
 # Generate Video Button
-if st.button("🚀 Generate NCERT Math Video", type="primary", use_container_width=True):
+if st.button("🚀 Generate Math Video", type="primary", use_container_width=True):
     if not claude_api_key or not sarvam_api_key:
         st.error("Please provide both Claude API key and Sarvam AI API key")
     elif not problem_statement or not solution_steps:
@@ -221,13 +221,13 @@ if st.button("🚀 Generate NCERT Math Video", type="primary", use_container_wid
                         
                         # Display success
                         progress_bar.progress(100)
-                        status_text.text("✅ NCERT Math video generated successfully!")
+                        status_text.text("✅ Math video generated successfully!")
                         
                         # Show video
                         with open(video_path, 'rb') as video_file:
                             video_bytes = video_file.read()
                         
-                        st.success("🎉 Your NCERT Math video is ready!")
+                        st.success("🎉 Your Math video is ready!")
                         st.video(video_bytes)
                         
                         # Download options
@@ -464,7 +464,7 @@ def extract_class_name(script_content):
     return "NCERTMathProblem"  # Default fallback
 
 # Sample Problems Section
-st.header("📚 Sample NCERT Problems")
+st.header("📚 Sample Problems")
 
 sample_problems = {
     "Grade 6 - Algebra": {
