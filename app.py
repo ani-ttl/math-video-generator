@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 st.title("📐 Math Video Generator")
-st.markdown("Generate educational math videos for grades 6-10 with Hindi-English narration using Manim and Sarvam AI")
+st.markdown("Generate problem-solving math videos for grades 6-10 with Hindi-English narration using Manim and Sarvam AI")
 
 # Check Manim installation
 @st.cache_data
