@@ -1,0 +1,19 @@
+# Secrets and credentials
+.streamlit/secrets.toml
+*.json
+*credentials*
+*secret*
+*key*
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Temporary files
+output/
+data/
+media/
+audio_*/
+__pycache__/
+*.pyc
